@@ -1,6 +1,8 @@
 defmodule AppWeb.JobsLive do
   use AppWeb, :live_view
 
+  import AppWeb.JobsLive.Components, only: [job_detail_modal: 1, job_form_modal: 1, job_row: 1]
+
   alias App.Job
   alias App.Jobs
 
@@ -72,41 +74,12 @@ defmodule AppWeb.JobsLive do
       </.button>
 
       <div>
-        <div :for={job <- @jobs} class="border-b last:border-b-0 py-2 flex justify-between">
-          <div>
-            <%= job.title %>
-          </div>
-
-          <div>
-            <.button phx-click={JS.patch(%JS{}, ~p"/edit/#{job.id}") |> show_modal("job-form-modal")}>
-              <%= gettext("Editar") %>
-            </.button>
-
-            <.button phx-click="delete" phx-value-id={job.id} data-confirm={gettext("Estas seguro de borrar?")}>
-              <%= gettext("Borrar") %>
-            </.button>
-          </div>
-        </div>
+        <.job_row :for={job <- @jobs} job={job} />
       </div>
     </div>
 
-    <.modal id="job-form-modal" show={@live_action in [:new, :edit]} on_cancel={JS.patch(%JS{}, ~p"/")}>
-      <div class="mb-8 text-lg font-semibold">
-        <%= gettext("Publicar oferta laboral") %>
-      </div>
-
-      <.form
-        :let={f}
-        for={@changeset}
-        phx-change="validate"
-        phx-submit="save"
-        class="space-y-6"
-        autocomplete="off"
-      >
-        <.input type="text" field={f[:title]} label={gettext("Titulo")} />
-        <.button>Crear</.button>
-      </.form>
-    </.modal>
+    <.job_form_modal :if={@live_action in [:new, :edit]} changeset={@changeset} job={@job} />
+    <.job_detail_modal :if={@live_action == :show} job={@job} />
     """
   end
 
@@ -128,8 +101,14 @@ defmodule AppWeb.JobsLive do
     assign(socket, job: job, changeset: changeset)
   end
 
+  defp apply_action(:show, %{"id" => id}, socket) do
+    job = find_job(socket.assigns.jobs, id)
+
+    assign(socket, job: job)
+  end
+
   defp find_job(jobs, id) do
     {id, _} = Integer.parse(id)
-    job = Enum.find(jobs, fn job -> job.id == id end)
+    Enum.find(jobs, fn job -> job.id == id end)
   end
 end

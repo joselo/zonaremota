@@ -21,6 +21,7 @@ defmodule AppWeb.Router do
     live "/", JobsLive, :index
     live "/new", JobsLive, :new
     live "/edit/:id", JobsLive, :edit
+    live "/:id", JobsLive, :show
   end
 
   # Other scopes may use custom stacks.
