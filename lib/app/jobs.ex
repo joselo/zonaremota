@@ -4,10 +4,14 @@ defmodule App.Jobs do
   alias App.Repo
   alias App.Job
 
-  def create_job(attr) do
-    %Job{}
+  def save_job(%Job{} = job, attr) do
+    job
     |> Job.changeset(attr)
-    |> Repo.insert()
+    |> Repo.insert_or_update()
+  end
+
+  def delete_job(%Job{} = job) do
+    Repo.delete(job)
   end
 
   def list_jobs do

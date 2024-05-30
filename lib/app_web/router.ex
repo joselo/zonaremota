@@ -20,6 +20,7 @@ defmodule AppWeb.Router do
     # get "/", PageController, :home
     live "/", JobsLive, :index
     live "/new", JobsLive, :new
+    live "/edit/:id", JobsLive, :edit
   end
 
   # Other scopes may use custom stacks.
