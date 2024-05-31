@@ -68,10 +68,11 @@ defmodule AppWeb.JobsLive.Components do
   end
 
   attr :job, Job, required: true
+  attr :id, :string, required: true
 
   def job_row(assigns) do
     ~H"""
-    <div class="border-b last:border-b-0 py-2 flex justify-between">
+    <div id={@id} class="border-b last:border-b-0 py-2 flex justify-between">
       <div>
         <.link patch={~p"/#{@job.id}"} class="hover:underline">
           <%= @job.title %>

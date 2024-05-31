@@ -19,4 +19,8 @@ defmodule App.Jobs do
 
     Repo.all(query)
   end
+
+  def get_job(id) do
+    Repo.get!(Job, id)
+  end
 end

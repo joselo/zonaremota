@@ -10,7 +10,7 @@ defmodule AppWeb.JobsLive do
   def mount(_params, _session, socket) do
     jobs = Jobs.list_jobs()
 
-    socket = assign(socket, jobs: jobs)
+    socket = stream(socket, :jobs, jobs)
 
     {:ok, socket}
   end
@@ -36,10 +36,12 @@ defmodule AppWeb.JobsLive do
   def handle_event("save", %{"job" => params}, socket) do
     case Jobs.save_job(socket.assigns.job, params) do
       {:ok, job} ->
+        socket = stream_insert(socket, :jobs, job, at: 0)
+
         {:noreply,
          socket
          |> put_flash(:info, "Trabajo publicado: #{job.title}")
-         |> push_navigate(to: ~p"/")}
+         |> push_patch(to: ~p"/")}
 
       {:error, changeset} ->
         {:noreply, assign(socket, changeset: changeset)}
@@ -48,15 +50,16 @@ defmodule AppWeb.JobsLive do
 
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
-    socket.assigns.jobs
-    |> find_job(id)
+    Jobs.get_job(id)
     |> Jobs.delete_job()
     |> case do
       {:ok, job} ->
+        socket = stream_delete(socket, :jobs, job)
+
         {:noreply,
          socket
          |> put_flash(:info, "Trabajo borrado: #{job.title}")
-         |> push_navigate(to: ~p"/")}
+         |> push_patch(to: ~p"/")}
 
       {:error, _error} ->
         {:noreply,
@@ -73,8 +76,8 @@ defmodule AppWeb.JobsLive do
         <%= gettext("Publicar") %>
       </.button>
 
-      <div>
-        <.job_row :for={job <- @jobs} job={job} />
+      <div id="jobs" phx-update="stream">
+        <.job_row :for={{dom_id, job} <- @streams.jobs} id={dom_id} job={job} />
       </div>
     </div>
 
@@ -95,20 +98,15 @@ defmodule AppWeb.JobsLive do
   end
 
   defp apply_action(:edit, %{"id" => id}, socket) do
-    job = find_job(socket.assigns.jobs, id)
+    job = Jobs.get_job(id)
     changeset = Job.changeset(job)
 
     assign(socket, job: job, changeset: changeset)
   end
 
   defp apply_action(:show, %{"id" => id}, socket) do
-    job = find_job(socket.assigns.jobs, id)
+    job = Jobs.get_job(id)
 
     assign(socket, job: job)
-  end
-
-  defp find_job(jobs, id) do
-    {id, _} = Integer.parse(id)
-    Enum.find(jobs, fn job -> job.id == id end)
   end
 end
