@@ -8,11 +8,7 @@ defmodule AppWeb.JobsLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    jobs = Jobs.list_jobs()
-
-    socket = stream(socket, :jobs, jobs)
-
-    {:ok, socket}
+    {:ok, paginate_jobs(socket, 1)}
   end
 
   @impl true
@@ -69,6 +65,13 @@ defmodule AppWeb.JobsLive do
   end
 
   @impl true
+  def handle_event("next-page", _params, socket) do
+    new_page = socket.assigns.page + 1
+
+    {:noreply, paginate_jobs(socket, new_page)}
+  end
+
+  @impl true
   def render(assigns) do
     ~H"""
     <div class="space-y-8">
@@ -76,8 +79,15 @@ defmodule AppWeb.JobsLive do
         <%= gettext("Publicar") %>
       </.button>
 
-      <div id="jobs" phx-update="stream">
+      <div
+        id="jobs"
+        phx-update="stream"
+        phx-viewport-bottom={!@end_of_timeline? && "next-page"}>
         <.job_row :for={{dom_id, job} <- @streams.jobs} id={dom_id} job={job} />
+      </div>
+
+      <div :if={@end_of_timeline?} class="mt-5 text-center">
+        🎉 <%= gettext("Ya no existen mas trabajos") %> 🎉
       </div>
     </div>
 
@@ -108,5 +118,18 @@ defmodule AppWeb.JobsLive do
     job = Jobs.get_job(id)
 
     assign(socket, job: job)
+  end
+
+  defp paginate_jobs(socket, new_page) do
+    jobs = Jobs.list_jobs(new_page)
+
+    if Enum.empty?(jobs) do
+      assign(socket, end_of_timeline?: true)
+    else
+      socket
+      |> assign(end_of_timeline?: false)
+      |> assign(page: new_page)
+      |> stream(:jobs, jobs)
+    end
   end
 end
