@@ -1,6 +1,8 @@
 defmodule App.Users do
   alias App.Repo
   alias App.User
+  alias App.UserTokens
+  alias App.UserEmail
 
   def save_user(attrs) do
     if user = find_user(attrs) do
@@ -10,6 +12,14 @@ defmodule App.Users do
       |> User.changeset(attrs)
       |> Repo.insert()
     end
+  end
+
+  def deliver_magic_link(user) do
+    {email_token, user_token} = UserTokens.build_hashed_token(user)
+
+    Repo.insert!(user_token)
+
+    UserEmail.magic_link_email(user, email_token)
   end
 
   defp find_user(%{"email" => email}) do
