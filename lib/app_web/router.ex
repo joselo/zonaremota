@@ -18,6 +18,10 @@ defmodule AppWeb.Router do
     pipe_through :browser
 
     # get "/", PageController, :home
+
+    get "/users/sessions/:token", UserSessionController, :index
+    delete "/users/logout", UserSessionController, :logout
+
     live "/", JobsLive, :index
     live "/new", JobsLive, :new
     live "/edit/:id", JobsLive, :edit

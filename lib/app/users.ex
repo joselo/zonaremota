@@ -14,12 +14,12 @@ defmodule App.Users do
     end
   end
 
-  def deliver_magic_link(user) do
+  def deliver_magic_link(user, magic_link_url) do
     {email_token, user_token} = UserTokens.build_hashed_token(user)
 
     Repo.insert!(user_token)
 
-    UserEmail.magic_link_email(user, email_token)
+    UserEmail.magic_link_email(user, magic_link_url.(email_token))
   end
 
   defp find_user(%{"email" => email}) do

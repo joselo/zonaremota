@@ -5,10 +5,25 @@ defmodule AppWeb.JobsLive do
 
   alias App.Job
   alias App.Jobs
+  alias App.UserTokens
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, paginate_jobs(socket, 1)}
+  def mount(_params, session, socket) do
+    current_user =
+      case session do
+        %{"user_token" => token} ->
+          UserTokens.get_user_by_email_token(token)
+
+        _ ->
+          nil
+      end
+
+    socket =
+      socket
+      |> assign(current_user: current_user)
+      |> paginate_jobs(1)
+
+    {:ok, socket}
   end
 
   @impl true
@@ -75,6 +90,13 @@ defmodule AppWeb.JobsLive do
   def render(assigns) do
     ~H"""
     <div class="space-y-8">
+      <div :if={@current_user}>
+        <%= @current_user.email %>
+        <.link href={~p"/users/logout"} method="delete">
+          <%= gettext("Salir") %>
+        </.link>
+      </div>
+
       <.button phx-click={JS.patch(%JS{}, ~p"/new") |> show_modal("job-form-modal")}>
         <%= gettext("Publicar") %>
       </.button>

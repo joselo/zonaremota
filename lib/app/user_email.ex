@@ -16,13 +16,13 @@ defmodule App.UserEmail do
     end
   end
 
-  def magic_link_email(user, login_url) do
+  def magic_link_email(user, magic_link_url) do
     deliver(user.email, "Enlace para ingresar", """
     Hola #{user.email},
 
     Para ingresar a JobsApp por favor sigue el siguiente enlace:crypto
 
-    #{login_url}
+    #{magic_link_url}
     """)
   end
 end

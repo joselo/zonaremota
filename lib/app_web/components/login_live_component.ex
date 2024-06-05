@@ -31,7 +31,8 @@ defmodule AppWeb.LoginLiveComponent do
   def handle_event("save", %{"user" => params}, socket) do
     case Users.save_user(params) do
       {:ok, user} ->
-        Users.deliver_magic_link(user)
+        magic_link_url = &(~p"/users/sessions/#{&1}" |> url())
+        Users.deliver_magic_link(user, magic_link_url)
 
         {:noreply,
          socket
