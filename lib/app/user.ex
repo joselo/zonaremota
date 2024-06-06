@@ -3,7 +3,11 @@ defmodule App.User do
 
   import Ecto.Changeset
 
+  alias App.Job
+
   schema "users" do
+    has_many :jobs, Job
+
     field :email, :string
 
     timestamps()

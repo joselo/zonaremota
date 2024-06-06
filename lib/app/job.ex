@@ -3,7 +3,10 @@ defmodule App.Job do
 
   import Ecto.Changeset
 
+  alias App.User
+
   schema "jobs" do
+    belongs_to :user, User
     field :title, :string
 
     timestamps()
@@ -13,5 +16,6 @@ defmodule App.Job do
     job
     |> cast(attrs, [:title])
     |> validate_required([:title])
+    |> assoc_constraint(:user)
   end
 end

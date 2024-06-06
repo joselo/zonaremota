@@ -1,6 +1,8 @@
 defmodule AppWeb.Router do
   use AppWeb, :router
 
+  import AppWeb.UserAuth, only: [redirect_if_user_is_authenticated: 2]
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -15,24 +17,32 @@ defmodule AppWeb.Router do
   end
 
   scope "/", AppWeb do
+    pipe_through [:browser, :redirect_if_user_is_authenticated]
+
+    get "/users/sessions/:token", UserSessionController, :index
+  end
+
+  scope "/", AppWeb do
     pipe_through :browser
 
     # get "/", PageController, :home
 
-    get "/users/sessions/:token", UserSessionController, :index
     delete "/users/logout", UserSessionController, :logout
 
-    live_session :ensure_authenticated, on_mount: [
-      {AppWeb.UserAuth, :mount_current_user},
-      {AppWeb.UserAuth, :ensure_authenticated}
-    ] do
-      live "/new", JobsLive, :new
-      live "/edit/:id", JobsLive, :edit
+    live_session :ensure_authenticated,
+      on_mount: [
+        {AppWeb.UserAuth, :mount_current_user},
+        {AppWeb.UserAuth, :ensure_authenticated}
+      ] do
+      live "/new", MyJobsLive, :new
+      live "/edit/:id", MyJobsLive, :edit
+      live "/my-jobs", MyJobsLive, :my_jobs
     end
 
-    live_session :current_user, on_mount: [
-      {AppWeb.UserAuth, :mount_current_user}
-    ] do
+    live_session :current_user,
+      on_mount: [
+        {AppWeb.UserAuth, :mount_current_user}
+      ] do
       live "/", JobsLive, :index
       live "/:id", JobsLive, :show
     end

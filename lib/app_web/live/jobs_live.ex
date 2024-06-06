@@ -19,52 +19,6 @@ defmodule AppWeb.JobsLive do
   end
 
   @impl true
-  def handle_event("validate", %{"job" => params}, socket) do
-    changeset =
-      socket.assigns.job
-      |> Job.changeset(params)
-      |> Map.put(:action, :validate)
-
-    {:noreply, assign(socket, changeset: changeset)}
-  end
-
-  @impl true
-  def handle_event("save", %{"job" => params}, socket) do
-    case Jobs.save_job(socket.assigns.job, params) do
-      {:ok, job} ->
-        socket = stream_insert(socket, :jobs, job, at: 0)
-
-        {:noreply,
-         socket
-         |> put_flash(:info, "Trabajo publicado: #{job.title}")
-         |> push_patch(to: ~p"/")}
-
-      {:error, changeset} ->
-        {:noreply, assign(socket, changeset: changeset)}
-    end
-  end
-
-  @impl true
-  def handle_event("delete", %{"id" => id}, socket) do
-    Jobs.get_job(id)
-    |> Jobs.delete_job()
-    |> case do
-      {:ok, job} ->
-        socket = stream_delete(socket, :jobs, job)
-
-        {:noreply,
-         socket
-         |> put_flash(:info, "Trabajo borrado: #{job.title}")
-         |> push_patch(to: ~p"/")}
-
-      {:error, _error} ->
-        {:noreply,
-         socket
-         |> put_flash(:error, "El trabajo no pudo borrarse: #{socket.assigns.job.title}")}
-    end
-  end
-
-  @impl true
   def handle_event("next-page", _params, socket) do
     new_page = socket.assigns.page + 1
 
@@ -75,23 +29,8 @@ defmodule AppWeb.JobsLive do
   def render(assigns) do
     ~H"""
     <div class="space-y-8">
-      <div :if={@current_user}>
-        <%= @current_user.email %>
-        <.link href={~p"/users/logout"} method="delete">
-          <%= gettext("Salir") %>
-        </.link>
-      </div>
-
-      <.button :if={@current_user} phx-click={JS.patch(%JS{}, ~p"/new") |> show_modal("job-form-modal")}>
-        <%= gettext("Publicar") %>
-      </.button>
-
-      <.button phx-click={show_modal("login-form-modal")}>
-        <%= gettext("Ingresar") %>
-      </.button>
-
       <div id="jobs" phx-update="stream" phx-viewport-bottom={!@end_of_timeline? && "next-page"}>
-        <.job_row :for={{dom_id, job} <- @streams.jobs} id={dom_id} job={job} current_user={@current_user} />
+        <.job_row :for={{dom_id, job} <- @streams.jobs} id={dom_id} job={job} />
       </div>
 
       <div :if={@end_of_timeline?} class="mt-5 text-center">
@@ -99,27 +38,12 @@ defmodule AppWeb.JobsLive do
       </div>
     </div>
 
-    <.job_form_modal :if={@live_action in [:new, :edit]} changeset={@changeset} job={@job} />
     <.job_detail_modal :if={@live_action == :show} job={@job} />
     """
   end
 
   defp apply_action(:index, _params, socket) do
-    assign(socket, job: nil, changeset: nil)
-  end
-
-  defp apply_action(:new, _params, socket) do
-    job = %Job{}
-    changeset = Job.changeset(job)
-
-    assign(socket, job: job, changeset: changeset)
-  end
-
-  defp apply_action(:edit, %{"id" => id}, socket) do
-    job = Jobs.get_job(id)
-    changeset = Job.changeset(job)
-
-    assign(socket, job: job, changeset: changeset)
+    socket
   end
 
   defp apply_action(:show, %{"id" => id}, socket) do
@@ -128,15 +52,13 @@ defmodule AppWeb.JobsLive do
     assign(socket, job: job)
   end
 
-  defp apply_action(:login, _params, socket) do
-    socket
-  end
-
   defp paginate_jobs(socket, new_page) do
     jobs = Jobs.list_jobs(new_page)
 
     if Enum.empty?(jobs) do
-      assign(socket, end_of_timeline?: true)
+      socket
+      |> assign(end_of_timeline?: true)
+      |> stream(:jobs, [])
     else
       socket
       |> assign(end_of_timeline?: false)

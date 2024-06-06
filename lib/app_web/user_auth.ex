@@ -3,7 +3,7 @@ defmodule AppWeb.UserAuth do
 
   import AppWeb.Gettext
   import Phoenix.Component, only: [assign_new: 3]
-  import Phoenix.LiveView, only: [put_flash: 3, redirect: 2]
+  import Plug.Conn
 
   alias App.UserTokens
 
@@ -19,10 +19,23 @@ defmodule AppWeb.UserAuth do
     else
       socket =
         socket
-        |> put_flash(:error, gettext("Para acceder a esta pagina debes ingresar"))
-        |> redirect(to: ~p"/") 
+        |> Phoenix.LiveView.put_flash(
+          :error,
+          gettext("Para acceder a esta pagina debes ingresar")
+        )
+        |> Phoenix.LiveView.redirect(to: ~p"/")
 
       {:halt, socket}
+    end
+  end
+
+  def redirect_if_user_is_authenticated(conn, _opts) do
+    if get_session(conn, :user_token) do
+      conn
+      |> Phoenix.Controller.redirect(to: ~p"/")
+      |> halt()
+    else
+      conn
     end
   end
 

@@ -1,7 +1,7 @@
 defmodule AppWeb.LoginLiveComponent do
   use AppWeb, :live_component
 
-  import AppWeb.CoreComponents, only: [modal: 1, button: 1, input: 1]
+  import AppWeb.CoreComponents, only: [modal: 1, button: 1, input: 1, show_modal: 1]
   import AppWeb.Gettext
 
   alias App.User
@@ -13,6 +13,13 @@ defmodule AppWeb.LoginLiveComponent do
     changeset = User.changeset(user)
 
     socket = assign(socket, user: user, changeset: changeset)
+
+    {:ok, socket}
+  end
+
+  @impl true
+  def update(assigns, socket) do
+    socket = assign(socket, current_user: assigns.current_user)
 
     {:ok, socket}
   end
@@ -51,9 +58,25 @@ defmodule AppWeb.LoginLiveComponent do
   def render(assigns) do
     ~H"""
     <div>
-      <.modal id="login-form-modal">
-        <.user_form changeset={@changeset} target={@myself} />
-      </.modal>
+      <div :if={!@current_user}>
+        <.button phx-click={show_modal("login-form-modal")}>
+          <%= gettext("Publicar oferta") %>
+        </.button>
+
+        <.modal id="login-form-modal">
+          <.user_form changeset={@changeset} target={@myself} />
+        </.modal>
+      </div>
+
+      <div :if={@current_user}>
+        <.button phx-click={JS.navigate(%JS{}, ~p"/new")}>
+          <%= gettext("Publicar") %>
+        </.button>
+
+        <.link href={~p"/users/logout"} method="delete">
+          <%= gettext("Salir") %>
+        </.link>
+      </div>
     </div>
     """
   end
