@@ -5,25 +5,10 @@ defmodule AppWeb.JobsLive do
 
   alias App.Job
   alias App.Jobs
-  alias App.UserTokens
 
   @impl true
-  def mount(_params, session, socket) do
-    current_user =
-      case session do
-        %{"user_token" => token} ->
-          UserTokens.get_user_by_email_token(token)
-
-        _ ->
-          nil
-      end
-
-    socket =
-      socket
-      |> assign(current_user: current_user)
-      |> paginate_jobs(1)
-
-    {:ok, socket}
+  def mount(_params, _session, socket) do
+    {:ok, paginate_jobs(socket, 1)}
   end
 
   @impl true
@@ -97,7 +82,7 @@ defmodule AppWeb.JobsLive do
         </.link>
       </div>
 
-      <.button phx-click={JS.patch(%JS{}, ~p"/new") |> show_modal("job-form-modal")}>
+      <.button :if={@current_user} phx-click={JS.patch(%JS{}, ~p"/new") |> show_modal("job-form-modal")}>
         <%= gettext("Publicar") %>
       </.button>
 
@@ -106,7 +91,7 @@ defmodule AppWeb.JobsLive do
       </.button>
 
       <div id="jobs" phx-update="stream" phx-viewport-bottom={!@end_of_timeline? && "next-page"}>
-        <.job_row :for={{dom_id, job} <- @streams.jobs} id={dom_id} job={job} />
+        <.job_row :for={{dom_id, job} <- @streams.jobs} id={dom_id} job={job} current_user={@current_user} />
       </div>
 
       <div :if={@end_of_timeline?} class="mt-5 text-center">

@@ -7,6 +7,7 @@ defmodule AppWeb.JobsLive.Components do
 
   alias Phoenix.LiveView.JS
   alias App.Job
+  alias App.User
 
   attr :changeset, Ecto.Changeset, required: true
   attr :job, Job, required: true
@@ -69,6 +70,7 @@ defmodule AppWeb.JobsLive.Components do
 
   attr :job, Job, required: true
   attr :id, :string, required: true
+  attr :current_user, User, default: nil
 
   def job_row(assigns) do
     ~H"""
@@ -79,7 +81,7 @@ defmodule AppWeb.JobsLive.Components do
         </.link>
       </div>
 
-      <div>
+      <div :if={@current_user}>
         <.button phx-click={JS.patch(%JS{}, ~p"/edit/#{@job.id}") |> show_modal("job-form-modal")}>
           <%= gettext("Editar") %>
         </.button>
