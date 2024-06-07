@@ -42,6 +42,20 @@ defmodule App.Jobs do
     Repo.get!(Job, id)
   end
 
+  def list_new_jobs(%Job{} = last_job_inserted) do
+    query =
+      from(jobs in Job,
+        where: jobs.inserted_at > ^last_job_inserted.inserted_at,
+        order_by: [desc: :inserted_at]
+      )
+
+    Repo.all(query)
+  end
+
+  def list_new_jobs(nil) do
+    []
+  end
+
   def get_my_job(id, user_id) do
     Repo.get_by!(Job, %{id: id, user_id: user_id})
   end
