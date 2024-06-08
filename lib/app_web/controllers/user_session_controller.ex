@@ -27,10 +27,20 @@ defmodule AppWeb.UserSessionController do
   end
 
   defp put_token_in_session(conn, token) do
-    put_session(conn, :user_token, token)
+    conn
+    |> renew_session()
+    |> put_session(:user_token, token)
   end
 
   defp remove_token_from_session(conn) do
-    delete_session(conn, :user_token)
+    conn
+    |> delete_session(:user_token)
+    |> renew_session()
+  end
+
+  defp renew_session(conn) do
+    conn
+    |> configure_session(renew: true)
+    |> clear_session()
   end
 end
