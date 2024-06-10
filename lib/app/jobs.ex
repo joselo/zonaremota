@@ -16,15 +16,25 @@ defmodule App.Jobs do
     Repo.delete(job)
   end
 
-  def list_jobs(page \\ 1) do
+  def list_jobs(page, search_params) do
     offset = (page - 1) * @per_page
 
-    query = from(jobs in Job, limit: @per_page, offset: ^offset, order_by: [desc: :inserted_at])
+    query =
+      from(jobs in Job, limit: @per_page, offset: ^offset, order_by: [desc: :inserted_at])
+      |> filter_by_search_params(search_params)
 
     Repo.all(query)
   end
 
-  def list_jobs(page, user_id) do
+  defp filter_by_search_params(query, %{"search_text" => search_text}) do
+    where(query, [jobs], ilike(jobs.title, ^"%#{search_text}%"))
+  end
+
+  defp filter_by_search_params(query, _search_params) do
+    query
+  end
+
+  def list_my_jobs(page, user_id) do
     offset = (page - 1) * @per_page
 
     query =

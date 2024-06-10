@@ -2,7 +2,9 @@ defmodule AppWeb.JobsLive.Components do
   use Phoenix.Component
   use AppWeb, :verified_routes
 
-  import AppWeb.CoreComponents, only: [modal: 1, button: 1, input: 1, show_modal: 2]
+  import AppWeb.CoreComponents,
+    only: [modal: 1, button: 1, input: 1, show_modal: 2, simple_form: 1]
+
   import AppWeb.Gettext
 
   alias Phoenix.LiveView.JS
@@ -95,6 +97,19 @@ defmodule AppWeb.JobsLive.Components do
         </.button>
       </div>
     </div>
+    """
+  end
+
+  attr :form, :map, required: true
+
+  def search_job_form(assigns) do
+    ~H"""
+    <.simple_form for={@form} autocomplete="off" method="GET">
+      <.input field={@form[:search_text]} placeholder={gettext("Buscar oferta...")} />
+      <:actions>
+        <.button><%= gettext("Buscar") %></.button>
+      </:actions>
+    </.simple_form>
     """
   end
 end

@@ -125,7 +125,7 @@ defmodule AppWeb.MyJobsLive do
   end
 
   defp paginate_jobs(socket, new_page) do
-    jobs = Jobs.list_jobs(new_page, socket.assigns.current_user.id)
+    jobs = Jobs.list_my_jobs(new_page, socket.assigns.current_user.id)
 
     if Enum.empty?(jobs) do
       socket

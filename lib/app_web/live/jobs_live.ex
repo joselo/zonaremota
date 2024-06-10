@@ -1,7 +1,7 @@
 defmodule AppWeb.JobsLive do
   use AppWeb, :live_view
 
-  import AppWeb.JobsLive.Components, only: [job_detail_modal: 1, job_row: 1]
+  import AppWeb.JobsLive.Components, only: [job_detail_modal: 1, job_row: 1, search_job_form: 1]
 
   alias App.Jobs
   alias Phoenix.PubSub
@@ -9,18 +9,32 @@ defmodule AppWeb.JobsLive do
   @pub_sub_topic "new_jobs_posted"
 
   @impl true
+  def mount(%{"search_text" => _search_text} = search_params, _session, socket) do
+    {:ok, filter_jobs(socket, search_params)}
+  end
+
+  @impl true
   def mount(_params, _session, socket) do
+    {:ok, filter_jobs(socket)}
+  end
+
+  defp filter_jobs(socket, search_params \\ %{}) do
     PubSub.subscribe(App.PubSub, @pub_sub_topic)
+    search_form = to_form(search_params)
 
     page = 1
-    Task.async(fn -> paginate_jobs(page) end)
+    Task.async(fn -> paginate_jobs(page, search_params) end)
 
-    socket =
-      socket
-      |> assign(refresh_jobs: false, loading_jobs: true, page: page, end_of_timeline?: false)
-      |> stream(:jobs, [])
-
-    {:ok, socket}
+    socket
+    |> assign(
+      refresh_jobs: false,
+      loading_jobs: true,
+      page: page,
+      end_of_timeline?: false,
+      search_form: search_form,
+      search_params: search_params
+    )
+    |> stream(:jobs, [])
   end
 
   @impl true
@@ -33,7 +47,7 @@ defmodule AppWeb.JobsLive do
   @impl true
   def handle_event("next-page", _params, socket) do
     page = socket.assigns.page + 1
-    Task.async(fn -> paginate_jobs(page) end)
+    Task.async(fn -> paginate_jobs(page, socket.assigns.search_params) end)
 
     {:noreply, assign(socket, loading_jobs: true, page: page)}
   end
@@ -95,6 +109,8 @@ defmodule AppWeb.JobsLive do
         </.link>
       </div>
 
+      <.search_job_form form={@search_form} />
+
       <div id="jobs" phx-update="stream" phx-viewport-bottom={!@end_of_timeline? && "next-page"}>
         <.job_row :for={{dom_id, job} <- @streams.jobs} id={dom_id} job={job} />
       </div>
@@ -122,9 +138,7 @@ defmodule AppWeb.JobsLive do
     assign(socket, job: job)
   end
 
-  defp paginate_jobs(page) do
-    :timer.sleep(3000)
-
-    Jobs.list_jobs(page)
+  defp paginate_jobs(page, search_params) do
+    Jobs.list_jobs(page, search_params)
   end
 end
