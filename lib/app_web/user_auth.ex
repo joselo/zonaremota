@@ -30,7 +30,9 @@ defmodule AppWeb.UserAuth do
   end
 
   def redirect_if_user_is_authenticated(conn, _opts) do
-    if get_session(conn, :user_token) do
+    token = get_session(conn, :user_token)
+
+    if token && UserTokens.get_user_by_email_token(token) do
       conn
       |> Phoenix.Controller.redirect(to: ~p"/")
       |> halt()
