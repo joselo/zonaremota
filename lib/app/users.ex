@@ -22,11 +22,11 @@ defmodule App.Users do
     UserEmail.magic_link_email(user, magic_link_url.(email_token))
   end
 
-  defp find_user(%{"email" => email}) do
+  def find_user(%{"email" => email}) do
     Repo.get_by(User, %{email: email})
   end
 
-  defp find_user(_) do
+  def find_user(_) do
     nil
   end
 end
