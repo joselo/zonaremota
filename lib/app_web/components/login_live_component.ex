@@ -10,7 +10,7 @@ defmodule AppWeb.LoginLiveComponent do
   @impl true
   def mount(socket) do
     user = %User{}
-    changeset = User.changeset(user)
+    changeset = User.login_changeset(user)
 
     socket = assign(socket, user: user, changeset: changeset)
 
@@ -28,7 +28,7 @@ defmodule AppWeb.LoginLiveComponent do
   def handle_event("validate", %{"user" => params}, socket) do
     changeset =
       socket.assigns.user
-      |> User.changeset(params)
+      |> User.login_changeset(params)
       |> Map.put(:action, :validate)
 
     {:noreply, assign(socket, changeset: changeset)}

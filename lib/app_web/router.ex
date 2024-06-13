@@ -37,6 +37,7 @@ defmodule AppWeb.Router do
       live "/new", MyJobsLive, :new
       live "/edit/:id", MyJobsLive, :edit
       live "/my-jobs", MyJobsLive, :my_jobs
+      live "/my-profile", UserProfileLive, :index
     end
 
     live_session :current_user,

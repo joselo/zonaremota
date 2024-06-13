@@ -24,4 +24,12 @@ defmodule App.UsersTest do
       assert Users.find_user(%{"email" => user.email})
     end
   end
+
+  describe "update_user/2" do
+    test "it should update the user", %{user: user} do
+      assert {:ok, user_updated} = Users.update_user(user, %{"avatar" => "avatar.png"})
+
+      assert user_updated.avatar == "avatar.png"
+    end
+  end
 end

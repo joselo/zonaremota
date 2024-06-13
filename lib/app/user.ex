@@ -9,14 +9,19 @@ defmodule App.User do
     has_many :jobs, Job
 
     field :email, :string
+    field :avatar, :string
 
     timestamps()
   end
 
-  def changeset(user, attrs \\ %{}) do
+  def login_changeset(user, attrs \\ %{}) do
     user
     |> cast(attrs, [:email])
     |> validate_required([:email])
     |> unique_constraint(:email)
+  end
+
+  def changeset(user, attrs \\ %{}) do
+    cast(user, attrs, [:avatar])
   end
 end

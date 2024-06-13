@@ -9,9 +9,15 @@ defmodule App.Users do
       {:ok, user}
     else
       %User{}
-      |> User.changeset(attrs)
+      |> User.login_changeset(attrs)
       |> Repo.insert()
     end
+  end
+
+  def update_user(%User{} = user, attrs) do
+    user
+    |> User.changeset(attrs)
+    |> Repo.update()
   end
 
   def deliver_magic_link(user, magic_link_url) do
