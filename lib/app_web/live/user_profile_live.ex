@@ -94,7 +94,7 @@ defmodule AppWeb.UserProfileLive do
 
   defp user_avatar(assigns) do
     ~H"""
-    <div>
+    <div :if={@avatar}>
       <img src={~p"/uploads/#{@avatar}"} width="42" height="42" />
     </div>
     """

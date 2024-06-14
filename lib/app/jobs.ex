@@ -20,7 +20,12 @@ defmodule App.Jobs do
     offset = (page - 1) * @per_page
 
     query =
-      from(jobs in Job, limit: @per_page, offset: ^offset, order_by: [desc: :inserted_at])
+      from(jobs in Job,
+        limit: @per_page,
+        offset: ^offset,
+        order_by: [desc: :inserted_at],
+        preload: [:user]
+      )
       |> filter_by_search_params(search_params)
 
     Repo.all(query)
@@ -49,14 +54,20 @@ defmodule App.Jobs do
   end
 
   def get_job(id) do
-    Repo.get!(Job, id)
+    other_jobs_query =
+      from(jobs in Job, where: jobs.id != ^id, order_by: [desc: jobs.inserted_at], limit: 10)
+
+    Job
+    |> Repo.get!(id)
+    |> Repo.preload(other_jobs: other_jobs_query)
   end
 
   def list_new_jobs(%Job{} = last_job_inserted) do
     query =
       from(jobs in Job,
         where: jobs.inserted_at > ^last_job_inserted.inserted_at,
-        order_by: [desc: :inserted_at]
+        order_by: [desc: :inserted_at],
+        preload: [:user]
       )
 
     Repo.all(query)

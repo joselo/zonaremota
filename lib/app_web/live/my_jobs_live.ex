@@ -1,7 +1,7 @@
 defmodule AppWeb.MyJobsLive do
   use AppWeb, :live_view
 
-  import AppWeb.JobsLive.Components, only: [job_detail_modal: 1, job_form_modal: 1, job_row: 1]
+  import AppWeb.JobsLive.Components, only: [job_detail_modal: 1, job_form_modal: 1, my_job_row: 1]
 
   alias App.Job
   alias App.Jobs
@@ -78,12 +78,7 @@ defmodule AppWeb.MyJobsLive do
     ~H"""
     <div class="space-y-8">
       <div id="jobs" phx-update="stream" phx-viewport-bottom={!@end_of_timeline? && "next-page"}>
-        <.job_row
-          :for={{dom_id, job} <- @streams.jobs}
-          id={dom_id}
-          job={job}
-          current_user={@current_user}
-        />
+        <.my_job_row :for={{dom_id, job} <- @streams.jobs} id={dom_id} job={job} />
       </div>
 
       <div :if={@end_of_timeline?} class="mt-5 text-center">

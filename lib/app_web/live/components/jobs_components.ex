@@ -63,16 +63,29 @@ defmodule AppWeb.JobsLive.Components do
         <%= @job.title %>
       </div>
 
-      <div>
-        Body
-      </div>
+      <.other_jobs :if={Enum.any?(@job.other_jobs)} jobs={@job.other_jobs} />
     </.modal>
+    """
+  end
+
+  attr :jobs, :list, required: true
+
+  def other_jobs(assigns) do
+    ~H"""
+    <div class="space-y-8">
+      <h3 class="font-semibold"><%= gettext("Otras ofertas de la empresa") %></h3>
+
+      <div :for={job <- @jobs}>
+        <.link patch={~p"/#{job.id}"} class="underline">
+          <%= job.title %>
+        </.link>
+      </div>
+    </div>
     """
   end
 
   attr :job, Job, required: true
   attr :id, :string, required: true
-  attr :current_user, User, default: nil
 
   def job_row(assigns) do
     ~H"""
@@ -81,9 +94,34 @@ defmodule AppWeb.JobsLive.Components do
         <.link patch={~p"/#{@job.id}"} class="hover:underline">
           <%= @job.title %>
         </.link>
+
+        <div :if={@job.user}>
+          <div :if={@job.user.avatar}>
+            <img src={~p"/uploads/#{@job.user.avatar}"} width="22" height="22" />
+          </div>
+
+          <div>
+            <%= @job.user.email %>
+          </div>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  attr :job, Job, required: true
+  attr :id, :string, required: true
+
+  def my_job_row(assigns) do
+    ~H"""
+    <div id={@id} class="border-b last:border-b-0 py-2 flex justify-between">
+      <div>
+        <.link patch={~p"/#{@job.id}"} class="hover:underline">
+          <%= @job.title %>
+        </.link>
       </div>
 
-      <div :if={@current_user}>
+      <div>
         <.button phx-click={JS.patch(%JS{}, ~p"/edit/#{@job.id}") |> show_modal("job-form-modal")}>
           <%= gettext("Editar") %>
         </.button>

@@ -7,6 +7,8 @@ defmodule App.Job do
 
   schema "jobs" do
     belongs_to :user, User
+    has_many :other_jobs, through: [:user, :jobs]
+
     field :title, :string
 
     timestamps()
