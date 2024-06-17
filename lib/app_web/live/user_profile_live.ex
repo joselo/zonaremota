@@ -5,7 +5,7 @@ defmodule AppWeb.UserProfileLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    socket = allow_upload(socket, :files, accept: ~w(.jpg .jpeg .png), max_entries: 1)
+    socket = allow_upload(socket, :files, accept: ~w(.jpg .jpeg .png), max_file_size: 125000)
 
     {:ok, socket}
   end

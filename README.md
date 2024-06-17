@@ -1,18 +1,27 @@
-# App
+# ZonaRemota
 
-To start your Phoenix server:
+[ZonaRemota.com](https://ZonaRemota.com) es una aplicación web de Bolsa de Trabajo escrita en [Phoenix](https://phoenixframework.org) y [Elixir](https://elixir-lang.org), Todo el proceso para crear esta aplicación está en mi [canal de Youtube](https://www.youtube.com/@joselodev).
 
-  * Run `mix setup` to install and setup dependencies
-  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+La aplicación y los videos están en español, estoy creando esta aplicación para mostrar algunas de las características principales que nos brinda Phoenix para crear aplicaciones web.
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+## Temario y Videos
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+Estas son las características que estoy cubriendo en este repositorio:
 
-## Learn more
-
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
+ 1. [Instalar Elixir y Phoenix](https://youtu.be/cWyYmW7aM1M)
+ 2. [CRUD básico](https://youtu.be/ADh8tKTD5qU)
+ 3. [Componentes de Phoenix](https://youtu.be/hTGrvcE2yzk)
+ 4. [Transmisiones](https://youtu.be/GBkPkatF-T4)
+ 5. [Paginación](https://youtu.be/ttKKWBMUmgk)
+ 6. [Componentes en vivo](https://youtu.be/V5jtf4sAAfE)
+ 7. [Enviar correos electrónicos](https://youtu.be/WvieKQH2eIQ)
+ 8. [Autenticación de usuario](https://youtu.be/eKugQyoF-IE)
+ 9. [Sesiones en vivo](https://youtu.be/4oyU7vXzD3w)
+ 10. [Rutas y tuberías](https://youtu.be/hOBc1-lyjWs)
+ 11. [PubSub y tiempo real](https://youtu.be/9NDLps4GZFI)
+ 12. [Asignación de tareas y procesos](https://youtu.be/CR8fuWMEB14)
+ 13. [Filtrar resultados con consultas SQL](https://youtu.be/nj5jLEX1F4Q)
+ 14. [Cargue datos falsos usando archivos semilla y pruebas](https://youtu.be/qNBMbILef3Q)
+ 15. [Subir imágenes](https://youtu.be/VGpxKj7pjOQ)
+ 16. [Precargar datos usando Ecto](https://youtu.be/AyAZRhXXwew)
+ 17. Implemente en producción usando [Flyio](https://fly.io/), con un dominio personalizado usando [Route53](https://aws.amazon.com/route53/) y enviando correos electrónicos usando [Reenviar]( https://resend.com/)
