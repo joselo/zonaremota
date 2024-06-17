@@ -24,5 +24,5 @@ These are the features that I'm covering in this repo:
  14. [Load fake data using seed files & tests](https://youtu.be/qNBMbILef3Q)
  15. [Upload images](https://youtu.be/VGpxKj7pjOQ)
  16. [Preload data using Ecto](https://youtu.be/AyAZRhXXwew)
- 17. Deploy to production using [Flyio](https://fly.io/), with a custom domain using [Route53](https://aws.amazon.com/route53/) and sending emails using [Resend](https://resend.com/)
+ 17. [Deploy to production](https://youtu.be/D-qVyvQUUIU) using [Flyio](https://fly.io/), with a custom domain using [Route53](https://aws.amazon.com/route53/) and sending emails using [Resend](https://resend.com/)
 
