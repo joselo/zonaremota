@@ -105,13 +105,18 @@ defmodule AppWeb.UserProfileLive do
   defp error_to_string(:too_many_files), do: "You have selected too many files"
 
   defp consume_files(socket) do
-    consume_uploaded_entries(socket, :files, fn %{path: path}, _entry ->
-      file_name = Ecto.UUID.generate()
+    consume_uploaded_entries(socket, :files, fn %{path: path}, entry ->
+      file_name = "#{entry.uuid}.#{ext(entry)}"
 
       dest = Path.join(Application.app_dir(:app, "priv/static/uploads"), file_name)
       File.cp!(path, dest)
 
       {:ok, file_name}
     end)
+  end
+ 
+  defp ext(entry) do
+    [ext | _] = MIME.extensions(entry.client_type)
+    ext
   end
 end
