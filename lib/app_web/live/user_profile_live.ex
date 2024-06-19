@@ -1,6 +1,8 @@
 defmodule AppWeb.UserProfileLive do
   use AppWeb, :live_view
 
+  import AppWeb.SharedComponents, only: [user_avatar: 1]
+
   alias App.Users
   alias App.Storage
 
@@ -91,36 +93,6 @@ defmodule AppWeb.UserProfileLive do
     """
   end
 
-  attr :avatar, :string, required: true
-
-  defp user_avatar(assigns) do
-    assigns =
-      assign_new(assigns, :avatar_url, fn ->
-        gen_avatar_url(assigns.avatar)
-      end)
-
-    ~H"""
-    <div :if={@avatar_url}>
-      <img src={@avatar_url} width="42" height="42" />
-    </div>
-    """
-  end
-
-  defp gen_avatar_url(nil) do
-    nil
-  end
-
-  defp gen_avatar_url(avatar) do
-    if s3_bucket?() do
-      case Storage.get_download_url(avatar) do
-        {:ok, url} -> url
-        _ -> nil
-      end
-    else
-      ~p"/uploads/#{avatar}"
-    end
-  end
-
   defp error_to_string(:too_large), do: "Too large"
   defp error_to_string(:not_accepted), do: "You have selected an unacceptable file type"
   defp error_to_string(:too_many_files), do: "You have selected too many files"
@@ -129,7 +101,7 @@ defmodule AppWeb.UserProfileLive do
     consume_uploaded_entries(socket, :files, fn %{path: path}, entry ->
       file_name = "#{entry.uuid}.#{ext(entry)}"
 
-      if s3_bucket?() do
+      if App.Env.s3_bucket?() do
         file = File.read!(path)
         Storage.upload(file_name, file)
       else
@@ -144,9 +116,5 @@ defmodule AppWeb.UserProfileLive do
   defp ext(entry) do
     [ext | _] = MIME.extensions(entry.client_type)
     ext
-  end
-
-  defp s3_bucket? do
-    System.get_env("BUCKET_NAME")
   end
 end

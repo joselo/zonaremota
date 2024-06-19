@@ -6,6 +6,7 @@ defmodule AppWeb.JobsLive.Components do
     only: [modal: 1, button: 1, input: 1, show_modal: 2, simple_form: 1]
 
   import AppWeb.Gettext
+  import AppWeb.SharedComponents, only: [user_avatar: 1]
 
   alias Phoenix.LiveView.JS
   alias App.Job
@@ -95,9 +96,7 @@ defmodule AppWeb.JobsLive.Components do
         </.link>
 
         <div :if={@job.user}>
-          <div :if={@job.user.avatar}>
-            <img src={~p"/uploads/#{@job.user.avatar}"} width="22" height="22" />
-          </div>
+          <.user_avatar avatar={@job.user.avatar} />
 
           <div>
             <%= @job.user.email %>
