@@ -114,4 +114,28 @@ if config_env() == :prod do
   #     config :swoosh, :api_client, Swoosh.ApiClient.Hackney
   #
   # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
+
+  if config_env() != :test do
+    config :ex_aws,
+      # Consider setting this to config_env() != :prod
+      # if you don't want to debug your requests in production
+      debug_requests: true,
+      json_codec: Jason,
+      access_key_id:
+        System.get_env("AWS_ACCESS_KEY_ID") ||
+          raise("Missing env variable: AWS_ACCESS_KEY_ID"),
+      secret_access_key:
+        System.get_env("AWS_SECRET_ACCESS_KEY") ||
+          raise("Missing env variable: AWS_SECRET_ACCESS_KEY")
+
+    config :ex_aws, :s3,
+      scheme: "https://",
+      host: "fly.storage.tigris.dev",
+      region: "auto",
+      # This extra config is useful if you only want to work 
+      # with one bucket in your application. If not, remove it.
+      bucket:
+        System.get_env("BUCKET_NAME") ||
+          raise("Missing env variable: BUCKET_NAME")
+  end
 end

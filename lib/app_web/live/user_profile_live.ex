@@ -2,10 +2,11 @@ defmodule AppWeb.UserProfileLive do
   use AppWeb, :live_view
 
   alias App.Users
+  alias App.Storage
 
   @impl true
   def mount(_params, _session, socket) do
-    socket = allow_upload(socket, :files, accept: ~w(.jpg .jpeg .png), max_file_size: 125000)
+    socket = allow_upload(socket, :files, accept: ~w(.jpg .jpeg .png), max_file_size: 125_000)
 
     {:ok, socket}
   end
@@ -93,11 +94,31 @@ defmodule AppWeb.UserProfileLive do
   attr :avatar, :string, required: true
 
   defp user_avatar(assigns) do
+    assigns =
+      assign_new(assigns, :avatar_url, fn ->
+        gen_avatar_url(assigns.avatar)
+      end)
+
     ~H"""
-    <div :if={@avatar}>
-      <img src={~p"/uploads/#{@avatar}"} width="42" height="42" />
+    <div :if={@avatar_url}>
+      <img src={@avatar_url} width="42" height="42" />
     </div>
     """
+  end
+
+  defp gen_avatar_url(nil) do
+    nil
+  end
+
+  defp gen_avatar_url(avatar) do
+    if s3_bucket?() do
+      case Storage.get_download_url(avatar) do
+        {:ok, url} -> url
+        _ -> nil
+      end
+    else
+      ~p"/uploads/#{avatar}"
+    end
   end
 
   defp error_to_string(:too_large), do: "Too large"
@@ -108,15 +129,24 @@ defmodule AppWeb.UserProfileLive do
     consume_uploaded_entries(socket, :files, fn %{path: path}, entry ->
       file_name = "#{entry.uuid}.#{ext(entry)}"
 
-      dest = Path.join(Application.app_dir(:app, "priv/static/uploads"), file_name)
-      File.cp!(path, dest)
+      if s3_bucket?() do
+        file = File.read!(path)
+        Storage.upload(file_name, file)
+      else
+        dest = Path.join(Application.app_dir(:app, "priv/static/uploads"), file_name)
+        File.cp!(path, dest)
+      end
 
       {:ok, file_name}
     end)
   end
- 
+
   defp ext(entry) do
     [ext | _] = MIME.extensions(entry.client_type)
     ext
+  end
+
+  defp s3_bucket? do
+    System.get_env("BUCKET_NAME")
   end
 end
