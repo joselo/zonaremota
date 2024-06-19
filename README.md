@@ -25,3 +25,4 @@ Estas son las características que estoy cubriendo en este repositorio:
  15. [Subir imágenes](https://youtu.be/VGpxKj7pjOQ)
  16. [Precargar datos usando Ecto](https://youtu.be/AyAZRhXXwew)
  17. [Desplegar a producción](https://youtu.be/D-qVyvQUUIU) usando [Flyio](https://fly.io/), con un dominio personalizado usando [Route53](https://aws.amazon.com/route53/) y enviando correos electrónicos usando [Resend]( https://resend.com/)
+ 18. [Subir imágenes a S3](https://youtu.be/cMKoLZnlfQA) usando [Tigris](https://www.tigrisdata.com/docs/sdks/s3/aws-elixir-sdk/)
