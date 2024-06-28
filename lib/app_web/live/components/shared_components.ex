@@ -3,6 +3,7 @@ defmodule AppWeb.SharedComponents do
   use AppWeb, :verified_routes
 
   alias App.Storage
+  alias App.User
 
   attr :avatar, :string, required: true
 
@@ -15,6 +16,18 @@ defmodule AppWeb.SharedComponents do
     ~H"""
     <div :if={@avatar_url}>
       <img src={@avatar_url} width="42" height="42" />
+    </div>
+    """
+  end
+
+  attr :user, User, required: true
+
+  def user_info(assigns) do
+    ~H"""
+    <div>
+      <.user_avatar avatar={@user.avatar} />
+
+      <%= @user.name %>
     </div>
     """
   end

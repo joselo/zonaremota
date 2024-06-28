@@ -6,7 +6,7 @@ defmodule AppWeb.JobsLive.Components do
     only: [modal: 1, button: 1, input: 1, show_modal: 2, simple_form: 1]
 
   import AppWeb.Gettext
-  import AppWeb.SharedComponents, only: [user_avatar: 1]
+  import AppWeb.SharedComponents, only: [user_info: 1]
 
   alias Phoenix.LiveView.JS
   alias App.Job
@@ -32,7 +32,7 @@ defmodule AppWeb.JobsLive.Components do
       end)
 
     ~H"""
-    <.modal id="job-form-modal" show={true} on_cancel={JS.patch(%JS{}, ~p"/")}>
+    <.modal id="job-form-modal" show={true} on_cancel={JS.patch(%JS{}, ~p"/my-jobs")}>
       <div class="mb-8 text-lg font-semibold">
         <%= @modal_config.title %>
       </div>
@@ -45,7 +45,8 @@ defmodule AppWeb.JobsLive.Components do
         class="space-y-6"
         autocomplete="off"
       >
-        <.input type="text" field={f[:title]} label={gettext("Titulo")} />
+        <.input field={f[:title]} label={gettext("Titulo")} />
+        <.input field={f[:description]} label={gettext("Descripción")} type="textarea" />
         <.button>
           <%= @modal_config.submit_text %>
         </.button>
@@ -62,6 +63,12 @@ defmodule AppWeb.JobsLive.Components do
       <div class="mb-8 text-lg font-semibold">
         <%= @job.title %>
       </div>
+
+      <div>
+        <%= @job.description %>
+      </div>
+
+      <.user_info user={@job.user} />
 
       <.other_jobs :if={Enum.any?(@job.other_jobs)} jobs={@job.other_jobs} />
     </.modal>
@@ -96,11 +103,7 @@ defmodule AppWeb.JobsLive.Components do
         </.link>
 
         <div :if={@job.user}>
-          <.user_avatar avatar={@job.user.avatar} />
-
-          <div>
-            <%= @job.user.email %>
-          </div>
+          <.user_info user={@job.user} />
         </div>
       </div>
     </div>

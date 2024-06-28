@@ -5,10 +5,17 @@ defmodule AppWeb.UserProfileLive do
 
   alias App.Users
   alias App.Storage
+  alias App.User
 
   @impl true
   def mount(_params, _session, socket) do
-    socket = allow_upload(socket, :files, accept: ~w(.jpg .jpeg .png), max_file_size: 125_000)
+    changeset = User.changeset(socket.assigns.current_user)
+    form = to_form(changeset)
+
+    socket =
+      socket
+      |> assign(changeset: changeset, form: form)
+      |> allow_upload(:files, accept: App.Env.list_avatar_formats(), max_file_size: 125_000)
 
     {:ok, socket}
   end
@@ -24,20 +31,19 @@ defmodule AppWeb.UserProfileLive do
   end
 
   @impl true
-  def handle_event("save", _params, socket) do
-    case consume_files(socket) do
-      [file_name | _] ->
-        Users.update_user(socket.assigns.current_user, %{"avatar" => file_name})
+  def handle_event("save", %{"user" => params}, socket) do
+    case Users.update_user(socket.assigns.current_user, set_avatar(params, socket)) do
+      {:ok, _user} ->
+        {:noreply,
+         socket
+         |> put_flash(:info, gettext("Perfil guardado"))
+         |> push_navigate(to: ~p"/my-profile")}
 
-        socket =
-          socket
-          |> put_flash(:info, gettext("Perfil guardado"))
-          |> push_navigate(to: ~p"/my-profile")
-
-        {:noreply, socket}
-
-      _ ->
-        {:noreply, put_flash(socket, :error, gettext("No fue posible guardar el perfil"))}
+      {:error, changeset} ->
+        {:noreply,
+         socket
+         |> assign(changeset: changeset, form: to_form(changeset))
+         |> put_flash(:error, gettext("No fue posible guardar el perfil"))}
     end
   end
 
@@ -45,11 +51,14 @@ defmodule AppWeb.UserProfileLive do
   def render(assigns) do
     ~H"""
     <div>
-      <.simple_form for={%{}} phx-submit="save" phx-change="validate">
+      <.simple_form for={@form} phx-submit="save" phx-change="validate" autocomplete="off">
         <.live_file_input upload={@uploads.files} />
 
         <.preview_avatar uploads={@uploads} />
         <.user_avatar avatar={@current_user.avatar} />
+
+        <.input field={@form[:name]} label={gettext("Nombre de la empresa")} />
+        <.input field={@form[:description]} label={gettext("Descripción")} type="textarea" />
 
         <.button type="submit"><%= gettext("Guardar") %></.button>
       </.simple_form>
@@ -91,6 +100,16 @@ defmodule AppWeb.UserProfileLive do
       <% end %>
     </section>
     """
+  end
+
+  def set_avatar(params, socket) do
+    case consume_files(socket) do
+      [file_name | _] ->
+        Map.put(params, "avatar", file_name)
+
+      [] ->
+        params
+    end
   end
 
   defp error_to_string(:too_large), do: "Too large"

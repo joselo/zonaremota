@@ -33,7 +33,7 @@ defmodule App.UserEmail do
     """
     Hola #{user.email},
 
-    Para ingresar a JobsApp por favor sigue el siguiente enlace:crypto
+    Para ingresar a JobsApp por favor sigue el siguiente enlace:
 
     #{magic_link_url}
     """
