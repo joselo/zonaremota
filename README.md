@@ -26,3 +26,4 @@ Estas son las características que estoy cubriendo en este repositorio:
  16. [Precargar datos usando Ecto](https://youtu.be/AyAZRhXXwew)
  17. [Desplegar a producción](https://youtu.be/D-qVyvQUUIU) usando [Flyio](https://fly.io/), con un dominio personalizado usando [Route53](https://aws.amazon.com/route53/) y enviando correos electrónicos usando [Resend]( https://resend.com/)
  18. [Subir imágenes a S3](https://youtu.be/cMKoLZnlfQA) usando [Tigris](https://www.tigrisdata.com/docs/sdks/s3/aws-elixir-sdk/)
+ 19. [Agregar campos al perfil del usuario](https://youtu.be/ZZp0s-oWavY) Agregar campos a un formulario, usando migraciones y actualizando formularios de edición

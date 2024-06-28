@@ -26,3 +26,4 @@ These are the features that I'm covering in this repo:
  16. [Preload data using Ecto](https://youtu.be/AyAZRhXXwew)
  17. [Deploy to production](https://youtu.be/D-qVyvQUUIU) using [Flyio](https://fly.io/), with a custom domain using [Route53](https://aws.amazon.com/route53/) and sending emails using [Resend](https://resend.com/)
  18. [Upload images to S3](https://youtu.be/cMKoLZnlfQA) using [Tigris](https://www.tigrisdata.com/docs/sdks/s3/aws-elixir-sdk/)
+ 19. [Add fields to user profile](https://youtu.be/ZZp0s-oWavY) Add fields to a form, using migrations and updating editing forms
