@@ -14,6 +14,28 @@
   <body class="bg-white antialiased scroll-smooth">
     <a name="top-page"></a>
 
+    <div class="relative isolate flex items-center gap-x-6 overflow-hidden bg-gray-50 px-6 py-2.5 sm:px-3.5 sm:before:flex-1">
+      <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <p class="text-sm leading-6 text-gray-900">
+          <strong class="font-semibold">Esta app es de código abierto</strong><svg
+            viewBox="0 0 2 2"
+            class="mx-2 inline h-0.5 w-0.5 fill-current"
+            aria-hidden="true"
+          ><circle cx="1" cy="1" r="1" /></svg>Creada usando Phoenix/Elixir
+        </p>
+
+        <.link
+          href="https://github.com/joselo/zonaremota/"
+          class="flex-none rounded-full bg-gray-900 px-3.5 py-1 text-sm font-semibold text-white shadow-sm hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+          target="_blank"
+        >
+          Ver en Github <span aria-hidden="true">&rarr;</span>
+        </.link>
+      </div>
+
+      <div class="flex flex-1 justify-end"></div>
+    </div>
+
     <%= @inner_content %>
   </body>
 </html>

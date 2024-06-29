@@ -15,7 +15,7 @@ defmodule AppWeb.SharedComponents do
 
     ~H"""
     <div :if={@avatar_url}>
-      <img src={@avatar_url} width="42" height="42" />
+      <img src={@avatar_url} class="h-5 w-5 rounded-full" />
     </div>
     """
   end
@@ -24,10 +24,12 @@ defmodule AppWeb.SharedComponents do
 
   def user_info(assigns) do
     ~H"""
-    <div>
+    <div class="inline-flex text-xs items-center space-x-2 text-zinc-500">
       <.user_avatar avatar={@user.avatar} />
 
-      <%= @user.name %>
+      <div>
+        <%= @user.name %>
+      </div>
     </div>
     """
   end

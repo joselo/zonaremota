@@ -111,7 +111,12 @@ defmodule AppWeb.JobsLive do
 
       <.search_job_form form={@search_form} />
 
-      <div id="jobs" phx-update="stream" phx-viewport-bottom={!@end_of_timeline? && "next-page"}>
+      <div
+        id="jobs"
+        phx-update="stream"
+        phx-viewport-bottom={!@end_of_timeline? && "next-page"}
+        class="space-y-4"
+      >
         <.job_row :for={{dom_id, job} <- @streams.jobs} id={dom_id} job={job} />
       </div>
 

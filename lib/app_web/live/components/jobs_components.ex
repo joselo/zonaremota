@@ -5,6 +5,7 @@ defmodule AppWeb.JobsLive.Components do
   import AppWeb.CoreComponents,
     only: [modal: 1, button: 1, input: 1, show_modal: 2, simple_form: 1]
 
+  import App.Env, only: [format_date_time: 1]
   import AppWeb.Gettext
   import AppWeb.SharedComponents, only: [user_info: 1]
 
@@ -96,17 +97,25 @@ defmodule AppWeb.JobsLive.Components do
 
   def job_row(assigns) do
     ~H"""
-    <div id={@id} class="border-b last:border-b-0 py-2 flex justify-between">
-      <div>
-        <.link patch={~p"/#{@job.id}"} class="hover:underline">
+    <.link
+      patch={~p"/#{@job.id}"}
+      id={@id}
+      class="border last:border-b-0 py-2 rounded-lg block p-4 flex justify-between gap-x-6 py-5 hover:bg-zinc-900 hover:text-white"
+    >
+      <div class="space-y-4">
+        <div class="text-xl">
           <%= @job.title %>
-        </.link>
-
-        <div :if={@job.user}>
-          <.user_info user={@job.user} />
         </div>
+
+        <.user_info :if={@job.user} user={@job.user} />
       </div>
-    </div>
+
+      <div class="shrink-0 sm:flex sm:flex-col sm:items-end">
+        <p class="text-xs leading-5 text-gray-500">
+          <%= format_date_time(@job.inserted_at) %>
+        </p>
+      </div>
+    </.link>
     """
   end
 
@@ -144,10 +153,15 @@ defmodule AppWeb.JobsLive.Components do
   def search_job_form(assigns) do
     ~H"""
     <.simple_form for={@form} autocomplete="off" method="GET">
-      <.input field={@form[:search_text]} placeholder={gettext("Buscar oferta...")} />
-      <:actions>
-        <.button><%= gettext("Buscar") %></.button>
-      </:actions>
+      <div class="flex justify-between items-center space-x-2">
+        <div class="w-full">
+          <.input field={@form[:search_text]} placeholder={gettext("Buscar oferta...")} />
+        </div>
+
+        <div class="mt-2">
+          <.button type="submit"><%= gettext("Buscar") %></.button>
+        </div>
+      </div>
     </.simple_form>
     """
   end
